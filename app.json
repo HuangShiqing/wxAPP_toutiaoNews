@@ -9,7 +9,7 @@
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#fff",
-    "navigationBarTitleText": "Coder News",
+    "navigationBarTitleText": "聚合新闻",
     "navigationBarTextStyle": "black"
   },
   "sitemapLocation": "sitemap.json"

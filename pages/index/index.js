@@ -1,25 +1,16 @@
 const app = getApp()
-const appKey = 'fc35d7872c25744ab4669c7d9dbcf15e' // 用于访问新闻接口的appKey
 const request = require('../../utils/request.js')
-const extractArticleInfo = require('./utils/getArticleTime.js')
 const shuffle = require('./utils/shuffle.js')
+
+export let g_contentNewsList = [];
 
 Page({
   data: {
     headerTitleName: [
-      { name: '头条', nameID: '201701', newsType: 'top' },
-      { name: '军事', nameID: '201702', newsType: 'junshi' },
-      { name: '体育', nameID: '201703', newsType: 'tiyu' },
-      { name: '科技', nameID: '201704', newsType: 'keji' },
-      { name: '财经', nameID: '201705', newsType: 'caijing' },
-      { name: '社会', nameID: '201706', newsType: 'shehui' },
-      { name: '时尚', nameID: '201707', newsType: 'shishang' },
-      { name: '娱乐', nameID: '201708', newsType: 'yule' },
-      { name: '国内', nameID: '201709', newsType: 'guonei' },
-      { name: '国际', nameID: '2017010', newsType: 'guoji' }
+      { name: '财经', nameID: '201701', newsType: 'business' },
+      { name: '国际', nameID: '201702', newsType: 'world' },
     ],
     swiperIndex: '1/4',
-    topPic: [],
     tapID: 201701, // 判断是否选中
     contentNewsList: [],
     showCopyright: false,
@@ -27,7 +18,7 @@ Page({
   },
 
   onLoad: function() {
-    this.renderPage('top', false, () => {
+    this.renderPage('business', false, () => {
       this.setData({
         showCopyright: true
       })
@@ -42,11 +33,9 @@ Page({
 
   //跳转到新闻详情页
   viewDetail: function(e) {
-    let newsUrl = e.currentTarget.dataset.newsurl || ''
-    let newsTitle = e.currentTarget.dataset.newstitle || ''
-    let newsAuthor = e.currentTarget.dataset.newsauthor || ''
+    let index = e.currentTarget.dataset.index
     wx.navigateTo({
-      url: '../detail/detail?newsUrl=' + newsUrl
+      url: '../detail/detail?index=' + index
     })
   },
 
@@ -57,11 +46,47 @@ Page({
   },
 
   onPulldownrefresh_SV() {
-    this.renderPage('top', true, () => {
+    this.renderPage('business', true, () => {
       this.setData({
         refreshing: false
       })
     })
+  },
+  formatDateUTC(datas) {
+    function parseToIOSCompatibleDate(dateStr) {
+      // 通用方案：利用正则或Date.parse兼容地提取日期部分
+      // 格式示例：Wed, 22 Oct 2025 00:00:00 GMT
+      const arr = dateStr.match(/\w{3}, (\d{2}) (\w{3}) (\d{4}) (\d{2}):(\d{2}):(\d{2}) GMT/);
+      if (!arr) return null;
+    
+      const months = {
+        'Jan': '01', 'Feb': '02', 'Mar': '03', 'Apr': '04',
+        'May': '05', 'Jun': '06', 'Jul': '07', 'Aug': '08',
+        'Sep': '09', 'Oct': '10', 'Nov': '11', 'Dec': '12'
+      };
+    
+      const yyyy = arr[3];
+      const MM = months[arr[2]];
+      const dd = arr[1];
+      const HH = arr[4];
+      const mm = arr[5];
+      const ss = arr[6];
+    
+      // ISO8601的UTC日期字符串：2025-10-22T00:00:00Z
+      return `${yyyy}-${MM}-${dd}T${HH}:${mm}:${ss}Z`;
+    }
+    datas.forEach(data => {
+      let str = parseToIOSCompatibleDate(data.publish_time);
+      const date = new Date(str);
+    
+      const month = date.getUTCMonth() + 1;
+      const day = date.getUTCDate();
+      const hour = date.getUTCHours().toString().padStart(2, '0');
+      const min = date.getUTCMinutes().toString().padStart(2, '0');
+
+      data.publish_time = `${month}月${day}日 ${hour}:${min}`;
+    })
+    return datas;
   },
   // isRefresh 是否为下拉刷新
   renderPage: function(newsType, isRefresh, calllBack) {
@@ -69,14 +94,15 @@ Page({
       wx.showLoading({
         title: '加载中'
       })
-      request({ url: `https://v.juhe.cn/toutiao/index?type=${newsType}&key=${appKey}`, newstype: newsType })
+      request({ url: `/api/news?category=${newsType}&num=30`})
         .then(res => {
           wx.hideLoading()
-          let { articleList, topPic } = extractArticleInfo(res.result.data)
+          let articleList = this.formatDateUTC(res.result.data)
           this.setData({
             contentNewsList: articleList,
-            topPic
           })
+          g_contentNewsList = articleList
+
           if (calllBack) {
             calllBack()
           }

@@ -120,7 +120,7 @@ page {
   text-overflow: ellipsis;
 }
 .article-source::before {
-  content: '作者:';
+  /* content: '作者:'; */
   font-size: 24rpx;
   color: #888;
   margin-right: 10rpx;

@@ -1,5 +1,5 @@
 /* pages/detail/detail.wxss */
-page {
+/* page {
   padding: 10px 10px 20px 10px;
   box-sizing: border-box;
 }
@@ -40,5 +40,121 @@ page {
 .article-content .section {
   line-height: 28px;
   margin-top: 20px;
+} */
+
+.news-container {
+  padding: 30rpx;
+  background-color: #fff;
 }
 
+.news-title {
+  font-size: 40rpx;
+  font-weight: bold;
+  line-height: 1.4;
+  color: #333;
+  margin-bottom: 20rpx;
+}
+
+.news-meta {
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 24rpx;
+  color: #999;
+  margin-bottom: 30rpx;
+}
+
+.meta-item {
+  margin-right: 30rpx;
+  margin-bottom: 10rpx;
+}
+
+.divider {
+  height: 1rpx;
+  background-color: #eee;
+  margin: 30rpx 0;
+}
+
+/* 对应的 WXSS */
+.news-content {
+  font-size: 32rpx;
+  line-height: 1.8;
+  color: #333;
+  /* text 组件默认会保留换行符 */
+  display: block;
+  width: 100%;
+}
+
+/* 封面图片样式 */
+.news-cover {
+  margin-bottom: 40rpx;
+}
+.cover-image {
+  width: 100%;
+  border-radius: 12rpx;
+  display: block;
+}
+.image-description {
+  font-size: 26rpx;
+  color: #666;
+  text-align: center;
+  margin-top: 20rpx;
+  line-height: 1.5;
+  font-style: italic;
+}
+
+/* 末尾图片区域样式 */
+.end-images-section {
+  margin-top: 0rpx;
+  /* border-top: 1rpx solid #eee;
+  padding-top: 40rpx; */
+}
+
+.section-title {
+  font-size: 34rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 30rpx;
+}
+
+/* 轮播图样式 */
+.end-images-swiper {
+  height: 500rpx; /* 根据需要调整高度 */
+  margin-bottom: 20rpx;
+}
+
+.swiper-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.end-image {
+  width: 100%;
+  height: 400rpx; /* 图片固定高度 */
+  border-radius: 12rpx;
+}
+
+.end-image-description {
+  font-size: 26rpx;
+  color: #666;
+  text-align: center;
+  margin-top: 20rpx;
+  line-height: 1.5;
+  padding: 0 20rpx;
+}
+
+/* 自定义指示器 */
+.custom-indicator {
+  text-align: center;
+  margin-top: 20rpx;
+}
+
+.indicator-text {
+  font-size: 24rpx;
+  color: #999;
+  background-color: rgba(0,0,0,0.1);
+  padding: 8rpx 20rpx;
+  border-radius: 20rpx;
+}

@@ -1,5 +1,73 @@
 <!-- pages/detail/detail.wxml -->
-<import src="../../components/wxParse/wxParse.wxml" />
-<view>
-  <template is="wxParse" data="{{wxParseData:newsDetailData.nodes}}" />
+<view class="news-container">
+  <!-- 新闻标题 -->
+  <view class="news-title">{{newsDetail.title}}</view>
+  
+  <!-- 新闻元信息 -->
+  <view class="news-meta">
+    <text class="meta-item">来源：{{newsDetail.source}}</text>
+    <text class="meta-item">板块：{{newsDetail.category_processed}}</text>
+    <text class="meta-item">发布时间：{{newsDetail.publish_time}}</text>
+    <!-- <text class="meta-item">阅读：{{newsDetail.viewCount}}</text> -->
+  </view>
+  
+  <!-- 分割线 -->
+  <view class="divider"></view>
+  <!-- 新闻封面图片 -->
+  <view class="news-cover" wx:if="{{newsDetail.lead_jpg}}">
+    <image 
+      class="cover-image" 
+      src="{{newsDetail.lead_jpg}}" 
+      mode="widthFix"
+      binderror="onImageError"
+      bindtap="onPreviewImage"
+    ></image>
+    <!-- 图片描述 -->
+    <view class="image-description" wx:if="{{newsDetail.lead_jpg_desc}}">
+      {{newsDetail.lead_jpg_desc}}
+    </view>
+  </view>
+  <!-- 新闻正文 -->
+  <!-- 使用 text 组件，默认会保留换行 -->
+  <text class="news-content" selectable>{{newsDetail.content}}</text>
+  <!-- 正文末尾的轮播图片 -->
+  <view class="end-images-section" wx:if="{{newsDetail.jpg_dict && newsDetail.jpg_dict.length}}">
+    <!-- <view class="section-title">相关图片</view> -->
+    
+    <!-- 轮播图容器 -->
+    <swiper 
+      class="end-images-swiper" 
+      indicator-dots="{{true}}" 
+      indicator-color="rgba(0,0,0,0.3)"
+      indicator-active-color="#007AFF"
+      autoplay="{{false}}"
+      interval="5000"
+      duration="500"
+      current="{{currentImageIndex}}"
+      bindchange="onEndImageSwipe"
+    >
+      <block wx:for="{{newsDetail.jpg_dict}}" wx:key="index">
+        <swiper-item>
+          <view class="swiper-item">
+            <image 
+              class="end-image" 
+              src="{{item.url}}" 
+              mode="aspectFit"
+              binderror="onImageError"
+              bindtap="onPreviewEndImage"
+            ></image>
+            <!-- 图片描述 -->
+            <view class="end-image-description" wx:if="{{item.description}}">
+              {{item.description}}
+            </view>
+          </view>
+        </swiper-item>
+      </block>
+    </swiper>
+    
+    <!-- 图片指示器（自定义样式） -->
+    <view class="custom-indicator">
+      <text class="indicator-text">{{currentImageIndex + 1}}/{{newsDetail.jpg_dict.length}}</text>
+    </view>
+  </view>
 </view>
