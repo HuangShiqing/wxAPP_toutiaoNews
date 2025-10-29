@@ -3,7 +3,11 @@ page {
   height: 100%;
 }
 .index {
-  height: 100%;
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* 或100%👈 */
+  box-sizing: border-box;
+  /* 确保 index 的父层（如页面根节点）也是100% */
 }
 ::-webkit-scrollbar {
   height: 0;
@@ -41,48 +45,15 @@ page {
   z-index: 99;
   font-size: 34rpx;
 }
-.nav-blank {
-  height: 80rpx;
-}
 /*content  */
-.scroll-view-refresh-load-component {
-  height: calc(100vh - 80rpx);
-}
-.content-top-pic {
-  position: relative;
-  height: 300rpx;
-  width: 100%;
-  background-color: rgba(0, 0, 0, 0.2);
-}
-.swiper-index {
-  position: absolute;
-  bottom: 10rpx;
-  right: 10rpx;
-  background-color: rgba(0, 0, 0, 0.6);
-  height: 40rpx;
-  width: 65rpx;
-  border-radius: 20rpx;
-  color: #fefefe;
-  line-height: 40rpx;
-  font-size: 24rpx;
-  text-align: center;
-}
-.swiper {
-  height: 100%;
-  width: 100%;
-}
-.swiper image {
-  height: 100%;
-  width: 100%;
-}
-
-/*swiper样式覆盖  */
-.content-list {
-  background-color: #fff;
-  z-index: 1;
-  position: relative;
+.list-container {
+  flex: 1;
+  min-height: 0;
+  padding-top: 80rpx;
+  background: #fafafa;
 }
 .list-item {
+  flex: 1;
   height: 180rpx;
   width: 100%;
   box-sizing: border-box;
@@ -139,9 +110,8 @@ page {
   bottom: 0;
   left: 0;
 }
-.footer {
-  overflow: hidden;
-}
-.footer-component {
-  margin: 15rpx 0 30rpx;
+.no-more-text {
+  text-align: center;
+  color: #888;
+  padding: 24rpx;
 }

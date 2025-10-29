@@ -2,37 +2,33 @@
 <view class='index'>
   <view class='header'>
     <view class='header-panel one-px-border'>
-      <block wx:for='{{headerTitleName}}' wx:key="nameID">
-        <view data-id='{{item.nameID}}' data-url='{{item.nameUrl}}' data-newstype='{{item.newsType}}' class="header-title {{item.nameID == tapID? 'header-title-active':''}}" bindtap='headerTitleClick'>
+      <block wx:for='{{headerTitleName}}' wx:key="newsType">
+        <view data-newstype='{{item.newsType}}' class="header-title {{item.newsType == currentType? 'header-title-active':''}}" bindtap='headerTitleClick'>
           {{item.name}}
         </view>
       </block>
     </view>
   </view>
-  <view class="nav-blank"></view>
-  <scroll-view-refresh-load class='scroll-view-refresh-load-component' refreshing="{{refreshing}}" bindpulldownrefresh="onPulldownrefresh_SV">
-    <view class='content'>
-      <view class='content-list'>
-        <block wx:for='{{contentNewsList}}' wx:key="newsID" wx:if="{{contentNewsList && contentNewsList.length > 0}}">
-          <view class='list-item' bindtap='viewDetail' data-index='{{index}}'>
-            <view class='list-item-content one-px-border'>
-              <view class='list-item-left'>
-                <image src='{{item.thumb_jpg}}'></image>
-              </view>
-              <view class='list-item-right'>
-                <view class='article-title'>{{item.title_short}}</view>
-                <view class='article-source'>{{item.source}}</view>
-                <view class='article-editTime'>{{item.publish_time}}</view>
-              </view>
-            </view>
-          </view>
-        </block>
+  <scroll-view
+  class="list-container"
+  scroll-y="true"
+  bindscrolltolower="loadMore"
+  lower-threshold="50"
+>
+  <block wx:for='{{contentNewsList[currentType]}}' wx:key="newsID" wx:if="{{contentNewsList[currentType] && contentNewsList[currentType].length > 0}}">
+    <view class='list-item' bindtap='viewDetail' data-index='{{index}}'>
+      <view class='list-item-content one-px-border'>
+        <view class='list-item-left'>
+          <image src='{{item.thumb_jpg}}'></image>
+        </view>
+        <view class='list-item-right'>
+          <view class='article-title'>{{item.title_short}}</view>
+          <view class='article-source'>{{item.source}}</view>
+          <view class='article-editTime'>{{item.publish_time}}</view>
+        </view>
       </view>
     </view>
-    <view class="footer" wx:if="{{showCopyright}}">
-      <view class="footer-component">
-        <component-copyright></component-copyright>
-      </view>
-    </view>
-  </scroll-view-refresh-load>
+  </block>
+  <view wx:if="{{!hasMore[currentType]}}" class="no-more-text">没有更多了</view>
+</scroll-view>
 </view>

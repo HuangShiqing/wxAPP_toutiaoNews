@@ -1,4 +1,4 @@
-import { g_contentNewsList } from '../index/index.js';
+import { g_contentNews } from '../index/index.js';
 
 Page({
   data: {
@@ -38,10 +38,8 @@ Page({
       });
     }
   },
-  onLoad: function(options) {
-    let {index} = options
-    let data = g_contentNewsList[index]
-
+  onLoad: function() {
+    let data = g_contentNews
     const urlArr = data.jpg.split('\n');
     const descArr = data.jpg_desc.split('\n');
     const jpg_dict = urlArr.map((url, idx) => ({
@@ -58,7 +56,7 @@ Page({
         publish_time: data.publish_time,
         source: data.source,
         jpg_dict: jpg_dict,
-        category_processed: data.category_processed
+        category_processed: data.category
       }
     });
 

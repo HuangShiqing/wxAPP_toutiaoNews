@@ -1,57 +1,90 @@
-const app = getApp()
 const request = require('../../utils/request.js')
-const shuffle = require('./utils/shuffle.js')
 
-export let g_contentNewsList = [];
+export let g_contentNews = [];
 
 Page({
   data: {
     headerTitleName: [
-      { name: '财经', nameID: '201701', newsType: 'business' },
-      { name: '国际', nameID: '201702', newsType: 'world' },
+      { name: '财经', newsType: 'business' },
+      { name: '国际', newsType: 'world' },
+      { name: '科技', newsType: 'technology' },
+      { name: '中国', newsType: 'china' },
+      { name: '观点', newsType: 'opinion' },
     ],
-    swiperIndex: '1/4',
-    tapID: 201701, // 判断是否选中
-    contentNewsList: [],
-    showCopyright: false,
-    refreshing: false
+
+    pageSize: 10,
+    currentType: 'business',
+    contentNewsList: {},
+    page: {},
+    hasMore: {},
   },
 
   onLoad: function() {
-    this.renderPage('business', false, () => {
-      this.setData({
-        showCopyright: true
+    // 初始化
+    this.data.headerTitleName.forEach(item => {
+      this.data.contentNewsList[item.newsType] = [];
+      this.data.page[item.newsType] = 0;
+      this.data.hasMore[item.newsType] = true;
+    });
+
+    this.updateNews(this.data.currentType)
+    this.renderPage(this.data.currentType)
+  },
+
+  // 获取列表数据
+  renderPage: function(newsType) {
+    this.setData({
+      currentType: newsType
+    });
+  },
+
+  updateNews: function(newsType) {
+    if (this.data.hasMore[newsType]) {
+      wx.showLoading({
+        title: '加载中'
       })
-    })
+      let offset = this.data.page[newsType] * this.data.pageSize;
+      request({ url: `/api/news?category=${newsType}&num=${this.data.pageSize}&offset=${offset}`})
+      .then(res => {
+        wx.hideLoading()
+        let articleList = this.formatDateUTC(res.result.data)
+
+        const oldList = this.data.contentNewsList[newsType] || [];
+        this.setData({
+          ['contentNewsList.' + newsType]: [...oldList, ...articleList],
+          ['hasMore.' + newsType]: articleList.length >= this.data.pageSize,
+        });
+        this.data.page[newsType] += 1
+      })
+      .catch(error => {
+        wx.hideLoading()
+      })
+    }
+  },
+
+  // 监听滚动到底部
+  loadMore() {
+    this.updateNews(this.data.currentType)
   },
 
   // headerBar 点击
   headerTitleClick: function(e) {
-    this.setData({ tapID: e.target.dataset.id })
-    this.renderPage(e.currentTarget.dataset.newstype, false)
+    // 首次点击需要拉取数据
+    if(this.data.contentNewsList[e.currentTarget.dataset.newstype].length == 0) {
+      this.updateNews(e.currentTarget.dataset.newstype)
+    }
+    this.renderPage(e.currentTarget.dataset.newstype)
   },
 
   //跳转到新闻详情页
   viewDetail: function(e) {
     let index = e.currentTarget.dataset.index
+    g_contentNews = this.data.contentNewsList[this.data.currentType][index]
     wx.navigateTo({
-      url: '../detail/detail?index=' + index
+      url: '../detail/detail'
     })
   },
 
-  handleSwiperChange: function(e) {
-    this.setData({
-      swiperIndex: `${e.detail.current + 1}/4`
-    })
-  },
-
-  onPulldownrefresh_SV() {
-    this.renderPage('business', true, () => {
-      this.setData({
-        refreshing: false
-      })
-    })
-  },
   formatDateUTC(datas) {
     function parseToIOSCompatibleDate(dateStr) {
       // 通用方案：利用正则或Date.parse兼容地提取日期部分
@@ -84,46 +117,8 @@ Page({
       const hour = date.getUTCHours().toString().padStart(2, '0');
       const min = date.getUTCMinutes().toString().padStart(2, '0');
 
-      data.publish_time = `${month}月${day}日 ${hour}:${min}`;
+      data.publish_time = `${month}月${day}日 ${hour}时`;
     })
     return datas;
   },
-  // isRefresh 是否为下拉刷新
-  renderPage: function(newsType, isRefresh, calllBack) {
-    if (!isRefresh) {
-      wx.showLoading({
-        title: '加载中'
-      })
-      request({ url: `/api/news?category=${newsType}&num=30`})
-        .then(res => {
-          wx.hideLoading()
-          let articleList = this.formatDateUTC(res.result.data)
-          this.setData({
-            contentNewsList: articleList,
-          })
-          g_contentNewsList = articleList
-
-          if (calllBack) {
-            calllBack()
-          }
-        })
-        .catch(error => {
-          wx.hideLoading()
-        })
-    } else {
-      // 数组随机排序，模拟刷新
-      let contentNewsListTemp = shuffle(JSON.parse(JSON.stringify(this.data.contentNewsList)))
-      /* contentNewsListTemp.sort(() => {
-        return Math.random() > 0.5 ? -1 : 1
-      }) */
-      setTimeout(() => {
-        this.setData({
-          contentNewsList: contentNewsListTemp
-        })
-        if (calllBack) {
-          calllBack()
-        }
-      }, 2000)
-    }
-  }
 })
