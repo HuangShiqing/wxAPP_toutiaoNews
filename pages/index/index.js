@@ -48,6 +48,7 @@ Page({
       .then(res => {
         wx.hideLoading()
         let articleList = this.formatDateUTC(res.result.data)
+        this.formatContent(articleList)
 
         const oldList = this.data.contentNewsList[newsType] || [];
         this.setData({
@@ -121,4 +122,22 @@ Page({
     })
     return datas;
   },
+
+  // BBC news 小标题
+  formatContent(articleList) {
+    articleList.forEach(article => {
+      if (typeof article.content !== 'string') return;
+      const lines = article.content.split('\n').filter(line => line.trim() !== '');
+      article.content = lines.map(line => {
+        if (line.startsWith('H2')) {
+          return { type: 'header', text: line.slice(2).trim() };
+        } else if (line.startsWith('P')) {
+          return { type: 'paragraph', text: line.slice(1).trim() };
+        } else {
+          return { type: 'paragraph', text: line.trim() };
+        }
+      });
+    });
+    return articleList;
+  }
 })

@@ -28,8 +28,12 @@
     </view>
   </view>
   <!-- 新闻正文 -->
-  <!-- 使用 text 组件，默认会保留换行 -->
-  <text class="news-content" selectable>{{newsDetail.content}}</text>
+  <view class="news-content">
+    <block wx:for="{{newsDetail.content}}" wx:key="index">
+      <view wx:if="{{item.type === 'header'}}" class="news-header">{{item.text}}</view>
+      <view wx:elif="{{item.type === 'paragraph'}}" class="news-paragraph">{{item.text}}</view>
+    </block>
+  </view>
   <!-- 正文末尾的轮播图片 -->
   <view class="end-images-section" wx:if="{{newsDetail.jpg_dict && newsDetail.jpg_dict.length}}">
     <!-- <view class="section-title">相关图片</view> -->

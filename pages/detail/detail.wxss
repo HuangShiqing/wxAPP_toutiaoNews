@@ -83,6 +83,16 @@
   display: block;
   width: 100%;
 }
+.news-header {
+  font-size: 20px;
+  font-weight: bold;
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+.news-paragraph {
+  font-size: 16px;
+  margin-bottom: 6px;
+}
 
 /* 封面图片样式 */
 .news-cover {
